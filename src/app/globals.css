@@ -1,0 +1,91 @@
+@import "tailwindcss";
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Eventos Semanales */
+
+.rbc-event{
+  margin: 5px;
+}
+.calendarioSemanal .rbc-event {
+  background-color: #4f46e5 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 4px 8px;
+  font-weight: 500;
+}
+
+.calendarioSemanal .rbc-time-content{
+  display: none;
+}
+.calendarioSemanal .rbc-time-header-gutter{
+  display: none;
+}
+.calendarioSemanal .rbc-label{
+  display: none;
+}
+
+.calendarioSemanal .rbc-today {
+  background-color: #eef2ff !important;
+}
+
+.calendarioSemanal .rbc-header {
+  font-weight: bold;
+  padding: 10px 0;
+  color: #312e81;
+}
+
+/* Eventos Mensuales */
+.calendarioMensual .rbc-month-view{
+  border: 1px solid oklch(87.2% 0.01 258.338);
+  border-radius: 10px;
+}
+
+.calendarioMensual .rbc-event {
+  background-color: #4f46e5 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 4px 8px;
+  font-weight: 500;
+}
+
+.calendarioMensual .rbc-event:hover {
+  background-color: #4338ca !important;
+}
+
+.calendarioMensual .rbc-today {
+  background-color: #eef2ff !important;
+}
+
+.calendarioMensual .rbc-header {
+  font-weight: bold;
+  padding: 10px 0;
+  color: oklch(35.9% 0.144 278.697);
+}
+.calendarioMensual .rbc-month-row {
+  color: oklch(70.7% 0.022 261.325);
+}
