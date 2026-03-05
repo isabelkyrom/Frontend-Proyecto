@@ -40,6 +40,7 @@ export default function Navbar() {
         <Link href="/home" className='text-xl font-bold text-white'>Gestión Personal</Link>
         <nav className='flex items-center gap-2'>
           <NavLink href="/">Inicio</NavLink>
+          <NavLink href="/home">Home</NavLink>
           <NavLink href="/tareas">Tareas</NavLink>
           <NavLink href="/eventos">Eventos</NavLink>
           <NavLink href="/posts">Posts</NavLink>

@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import StatusBox from '@/components/StatusBox';
 import { getTareas } from '../../utils/api/getTareas';
 import { getUsuario } from '../../utils/api/getUsuario';
@@ -11,22 +12,32 @@ import {Calendar, dayjsLocalizer} from 'react-big-calendar';
 import dayjs from 'dayjs';
 
 export default function Home() {
+  const router = useRouter();
 
+  // ENTIDADES
   const [tareas, setTareas] = useState([]);
   const [usuario, setUsuario] = useState();
   const [eventos, setEventos] = useState([]);
+
+  // POPUPS
   const [openPopup, setOpenPopout] = useState(false)
   const [openPopup2, setOpenPopout2] = useState(false)
 
+  // DATOS TAREAS
   const [nombre, setNombre] = useState('');
-  const [fecha_inicio, setFechaInicio] = useState('');
   const [fecha_finalizacion, setFechaFinal] = useState('');
   const [categoria, setCategoria] = useState('');
-
+  
+  // DATOS EVENTOS 
+  const [nombreEvento, setNombreEvento] = useState('');
+  const [fecha_inicio, setFechaInicio] = useState('');
+  const [fecha_finalizacionEvento, setFechaFinalEvento] = useState('');
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+// ------- CALENDARIO
   const localizer = dayjsLocalizer(dayjs);
 
   // GET info
@@ -63,6 +74,21 @@ export default function Home() {
   // Juntamos ambos tipos de datos
   const todosEventos = [...appointments, ...pendientes]
 
+  const handleDelete = async (id) => {
+    try {
+        await deleteEvento(id); // tu API
+
+        setEventos(prev =>
+            prev.filter(ev => ev.id !== id)
+        );
+
+    } catch (error) {
+        console.error("Error eliminando evento", error);
+    }
+  };
+
+// ------- TAREAS
+// VALIDACION
   function validarTareas() {
     if ( !nombre.trim()) return 'Nombre requerido';
     if ( !fecha_finalizacion.trim() ) return 'Fecha inválida';
@@ -70,6 +96,7 @@ export default function Home() {
     return '';
   }
 
+// CREAR TAREA
   const crearTarea = async (ev) => {
     ev.preventDefault();
     setError('');
@@ -110,13 +137,16 @@ export default function Home() {
     }
   }
 
+// ------- EVENTOS
+// VALIDACION
   function validarEvento() {
-    if ( !nombre.trim() ) return 'Nombre requerido';
+    if ( !nombreEvento.trim() ) return 'Nombre requerido';
     if ( !fecha_inicio.trim() ) return 'Fecha inválida';
-    if ( !fecha_finalizacion.trim() ) return 'Fecha inválida';
+    if ( !fecha_finalizacionEvento.trim() ) return 'Fecha inválida';
     return '';
   }
 
+// CREAR EVENTO
   const crearEvento = async (ev) => {
     ev.preventDefault();
     setError('');
@@ -131,14 +161,14 @@ export default function Home() {
     setLoading(true);
     try {
 
-      await createEvento({ nombre: nombre, fecha_inicio:fecha_inicio, fecha_finalizacion:fecha_finalizacion});
+      await createEvento({ nombre: nombreEvento, fecha_inicio:fecha_inicio, fecha_finalizacion:fecha_finalizacionEvento});
       const nuevosEventos = await getEventos();
       setEventos(nuevosEventos);
 
       setSuccess('Evento creada correctamente');
-      setNombre('');
+      setNombreEvento('');
       setFechaInicio('');
-      setFechaFinal('');
+      setFechaFinalEvento('');
       setTimeout(() => {
         setOpenPopout2(false);
         setSuccess('Tarea creada correctamente');
@@ -180,6 +210,7 @@ export default function Home() {
                     ">Bienvenida { usuario }!</h2>
                 </div>
 
+{/* CAlENDARIO SEMANAL */}
                 <div className='flex flex-col gap-6'>
                     <div className="bg-white rounded-xl shadow p-6 hidden md:block">
                         <div className="">
@@ -199,7 +230,7 @@ export default function Home() {
                         </div>
                     </div>
 
-
+{/* TAREAS */}
                     <div className="bg-white rounded-xl shadow p-6">
                         <div className="">
                             <div className="flex justify-between items-center">
@@ -213,7 +244,7 @@ export default function Home() {
                                 >Agregar Tarea</button>
                                 
                             </div>
-
+{/* POPUP */}
                             {
                                 openPopup && 
                                 <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
@@ -253,7 +284,7 @@ export default function Home() {
                                 </div>
                             }
 
-                        
+  {/* LISTA TAREAS */}                      
                             <div>
                                 <ul>
                                     {tareas.map((tarea) => (
@@ -282,6 +313,7 @@ export default function Home() {
 
             </div>
 
+{/* ASIDE */}
             <aside className="col-span-12 lg:col-span-4 bg-white p-7 rounded-xl shadow h-full">
                 <div className='flex flex-col gap-6'>
                     <div className="flex flex-col gap-6">
@@ -294,6 +326,7 @@ export default function Home() {
                             events={ todosEventos }
                             startAccessor="start"
                             endAccessor="end"
+
                             />
                         </div>
                         <button
@@ -303,7 +336,7 @@ export default function Home() {
                         text-white font-semibold
                         hover:scale-110 transition-all'
                         >Agregar evento</button>
-
+{/* POPUP 2 */}
                         {
                             openPopup2 && 
                             <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50'>
@@ -315,7 +348,7 @@ export default function Home() {
                                         >x</button>
                                     </div>
                                     <form onSubmit={crearEvento} className='flex flex-col gap-4'>
-                                        <input placeholder='Nombre' value={nombre} onChange={(e) => setNombre(e.target.value)}
+                                        <input placeholder='Nombre' value={nombreEvento} onChange={(e) => setNombreEvento(e.target.value)}
                                         className='border border-gray-300 rounded-lg
                                         px-3 py-2
                                         text-gray-400'
@@ -326,7 +359,7 @@ export default function Home() {
                                         px-3 py-2
                                         text-gray-400'/>
 
-                                        <input type='date' placeholder='Fecha de entrega (YYYY-MM-DD)' value={fecha_finalizacion} onChange={(e) => setFechaFinal(e.target.value)}
+                                        <input type='date' placeholder='Fecha de entrega (YYYY-MM-DD)' value={fecha_finalizacionEvento} onChange={(e) => setFechaFinalEvento(e.target.value)}
                                         className='border border-gray-300 rounded-lg
                                         px-3 py-2
                                         text-gray-400'/>
@@ -343,6 +376,7 @@ export default function Home() {
                             </div>
                         }
                     </div>
+{/* RUTINAS */}
                     <div className="">
                         <h4 className="text-center text-indigo-950 text-2xl font font-bold">Rutina</h4>
                         <p className="text-gray-400">Proximamente...</p>
